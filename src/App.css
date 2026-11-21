@@ -1,0 +1,236 @@
+
+/* CONTENEDOR PRINCIPAL */
+.clientes-contenedor {
+    width: 90%;
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 25px;
+    background-color: #142b49;
+    color: white;
+    border-radius: 10px;
+}
+
+/* TITULO */
+.clientes-titulo {
+    text-align: center;
+    margin-bottom: 25px;
+    color: white;
+}
+
+/* ENCABEZADO DE LA TABLA */
+.clientes-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* TABLA */
+.tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tabla-clientes {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    color: white;
+}
+
+.tabla-clientes th {
+    background-color: #31577e;
+    padding: 14px;
+}
+
+.tabla-clientes td {
+    padding: 12px;
+    border-bottom: 1px solid #45617f;
+}
+
+.tabla-clientes tbody tr:hover {
+    background-color: #203b5c;
+}
+
+/* BOTONES */
+.btn-registrar,
+.btn-editar,
+.btn-eliminar {
+    border: none;
+    border-radius: 5px;
+    padding: 9px 13px;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.2s;
+}
+
+.btn-registrar {
+    background-color: #31577e;
+}
+
+.btn-registrar:hover {
+    background-color: #456f9c;
+}
+
+.acciones {
+    white-space: nowrap;
+}
+
+.btn-editar {
+    background-color: #31577e;
+    margin-right: 8px;
+}
+
+.btn-editar:hover {
+    background-color: #456f9c;
+}
+
+.btn-eliminar {
+    background-color: #203b5c;
+}
+
+.btn-eliminar:hover {
+    background-color: #31577e;
+}
+
+/* MENSAJE DE ERROR */
+.mensaje-error {
+    color: #ffb3b3;
+    text-align: center;
+}
+
+/* ADAPTACIÓN A PANTALLAS PEQUEÑAS */
+@media (max-width: 700px) {
+    .clientes-contenedor {
+        width: 95%;
+        padding: 12px;
+        box-sizing: border-box;
+    }
+
+    .clientes-encabezado {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .tabla-clientes {
+        font-size: 13px;
+    }
+}
+/* ENCABEZADO PRINCIPAL */
+.encabezado-app {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    color: white;
+}
+
+.encabezado-app h1 {
+    color: white;
+    font-size: 36px;
+    margin: 10px 0;
+}
+
+.encabezado-app p {
+    color: #d5dfeb;
+    margin: 0;
+    text-align: center;
+}
+
+/* FORMULARIO DE CLIENTES */
+.formulario-contenedor {
+    width: 90%;
+    max-width: 550px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #142b49;
+    color: white;
+    border-radius: 10px;
+}
+
+.formulario-titulo {
+    text-align: center;
+    margin-bottom: 30px;
+    color: white;
+}
+
+/* CAMPOS */
+.formulario-clientes {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.campo-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.campo-formulario label {
+    color: white;
+    font-weight: 600;
+}
+
+.campo-formulario input {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #45617f;
+    border-radius: 5px;
+    background-color: #203b5c;
+    color: white;
+    outline: none;
+}
+
+.campo-formulario input:focus {
+    border-color: #8aafd6;
+}
+
+/* BOTONES */
+.botones-formulario {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.btn-guardar,
+.btn-volver {
+    padding: 11px 18px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+.btn-guardar {
+    background-color: #31577e;
+}
+
+.btn-guardar:hover {
+    background-color: #456f9c;
+}
+
+.btn-volver {
+    background-color: #203b5c;
+}
+
+.btn-volver:hover {
+    background-color: #31577e;
+}
+
+.btn-guardar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+    .formulario-contenedor {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .botones-formulario {
+        flex-direction: column;
+    }
+}
