@@ -1,15 +1,10 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-
-import {
-    obtenerClientePorId,
-    crearCliente,
-    actualizarCliente
-} from "../services/clientesService";
+import { useClientes } from "../context/ClientesContext";
+import { obtenerClientePorId } from "../services/clientesService";
 
 function ClientesForm() {
-
     const [formulario, setFormulario] = useState({
         nombre: "",
         telefono: "",
@@ -24,6 +19,11 @@ function ClientesForm() {
 
     const id = searchParams.get("id");
 
+    const {
+        registrarClienteContext,
+        actualizarClienteContext
+    } = useClientes();
+
     // Cargar datos cuando se edita un cliente
     useEffect(() => {
         const cargarCliente = async () => {
@@ -33,7 +33,7 @@ function ClientesForm() {
                 const datos = await obtenerClientePorId(id);
                 setFormulario(datos);
             } catch (error) {
-                console.error("Error al consultar cliente", error);
+                console.error("Error al consultar cliente:", error);
                 setError("No se pudieron cargar los datos del cliente");
             }
         };
@@ -41,7 +41,7 @@ function ClientesForm() {
         cargarCliente();
     }, [id]);
 
-    // Actualizar los campos del formulario
+    // Actualizar estados cuando escribimos
     const handleChange = (evento) => {
         const { name, value } = evento.target;
 
@@ -51,15 +51,11 @@ function ClientesForm() {
         }));
     };
 
-    // Validar los datos antes de guardar
+    // Validar formulario
     const validarFormulario = () => {
+        const { nombre, telefono, direccion } = formulario;
 
-        const nombre = formulario.nombre.trim();
-        const telefono = formulario.telefono.trim();
-        const direccion = formulario.direccion.trim();
-
-        // Validar nombre
-        if (!nombre) {
+        if (!nombre.trim()) {
             return "El nombre es obligatorio";
         }
 
@@ -67,17 +63,15 @@ function ClientesForm() {
             return "El nombre solo debe contener letras y espacios";
         }
 
-        // Validar teléfono
-        if (!telefono) {
+        if (!telefono.trim()) {
             return "El teléfono es obligatorio";
         }
 
-        if (!/^\d{10}$/.test(telefono)) {
+        if (!/^\d{10}$/.test(telefono.trim())) {
             return "El teléfono debe contener exactamente 10 números";
         }
 
-        // Validar dirección
-        if (!direccion) {
+        if (!direccion.trim()) {
             return "La dirección es obligatoria";
         }
 
@@ -109,18 +103,21 @@ function ClientesForm() {
         };
 
         try {
+            let resultado;
+
             if (id) {
-                await actualizarCliente(id, datosCliente);
+                resultado = await actualizarClienteContext(id, datosCliente);
             } else {
-                await crearCliente(datosCliente);
+                resultado = await registrarClienteContext(datosCliente);
             }
 
-            navigate("/clientes");
+            if (resultado !== false) {
+                navigate("/clientes");
+            }
 
         } catch (error) {
             console.error("Error al guardar cliente:", error);
             setError("No se pudo guardar la información del cliente");
-
         } finally {
             setCargando(false);
         }
@@ -201,7 +198,6 @@ function ClientesForm() {
                 </div>
 
             </form>
-
         </div>
     );
 }
