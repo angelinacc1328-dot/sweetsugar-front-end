@@ -1,5 +1,5 @@
-import { useState,useEffect } from "react";
-import { obtenerClientes,eliminarCliente } from "../services/clientesService";
+import { useEffect } from "react";
+import { useClientes } from "../context/ClientesContext";
 import { useNavigate } from "react-router-dom";
 
 
@@ -7,50 +7,29 @@ import { useNavigate } from "react-router-dom";
 function ClientesLista()
 {
 const navigate = useNavigate();
-const [clientes, setClientes] = useState([]);//guarda la lista clientes y el mensaje de error
-const[error, setError] = useState("");
-
-
+const {
+    clientes,//obtiene lista compartida de clientescontext
+    error,//obtiene el mensaje de error compartido
+    cargarClientes,//funcion q consulta al backend
+    eliminarClienteContext//elimina cliente y actualiza la lista
+} = useClientes();
 
 //DELETE
 const handleEliminar = async (id) =>{
     const confirmar = window.confirm("¿Desea eliminar al cliente?");
 
-    if(!confirmar){
+    if (!confirmar) {
         return;
     }
 
-    try{
-       await eliminarCliente(id);//actualiza el estado
-       setClientes((clienteActuales)=>
-        clienteActuales.filter(//se compara el id de cada cliente con el q se quiere eliminar
-           (cliente) => cliente.id_cliente !== id
-        )
-    );
-    }catch(error){
-        console.error("error al eliminar el cliente",error);
-        setError("no se puedo eliminar el cliente");
-    }
+    await eliminarClienteContext(id);
 };
-
 
 //GET
 
 useEffect (() =>{//se ejecuta cuando se monta un componente
-
-    const cargarClientes = async () =>{
-        try{
-            const datos = await obtenerClientes();
-            setClientes(datos);
-        }catch(error)
-        {
-        console.error("Error al obtener clientes",error);
-        setError("No se pudieron cargar los clientes");
-        }
-    };
-
+    
     cargarClientes();
-
 
 },[]);//use effect  ejecuta la consulta al montarce el componente
 
@@ -133,3 +112,13 @@ export default ClientesLista;
 
 ////key ayuda al dom virtual identificar elementos añadidos o modificados,eliminados
 //keycliente.id_cliente permite a react identificar cada fila por su id
+
+
+
+//Cuando se carga el componente ClientesLista, se ejecuta el useEffect.
+//Este llama a cargarClientes, que viene del contexto.
+//El contexto consulta los clientes al backend.
+
+
+//Cuando recibe los datos, actualiza el estado compartido.
+//React vuelve a renderizar la lista con los datos actualizados.

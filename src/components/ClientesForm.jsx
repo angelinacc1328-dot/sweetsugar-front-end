@@ -1,80 +1,123 @@
-import { useState,useEffect} from "react";
+
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useClientes } from "../context/ClientesContext";
+import { obtenerClientePorId } from "../services/clientesService";
 
-import{
-    obtenerClientePorId,
-    crearCliente,
-    actualizarCliente
-} from "../services/clientesService";
-
-function ClientesForm(){
-    //estados del form
-    const [formulario,setFormulario] = useState({
-        nombre :"",
-        telefono:"",
-        direccion:""
+function ClientesForm() {
+    const [formulario, setFormulario] = useState({
+        nombre: "",
+        telefono: "",
+        direccion: ""
     });
 
-    const [error,setError] = useState("");
-    const [cargando,setCargando] = useState(false);
+    const [error, setError] = useState("");
+    const [cargando, setCargando] = useState(false);
 
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();//permite leer los parametros de la url
+    const [searchParams] = useSearchParams();
 
+    const id = searchParams.get("id");
 
-//obtener el id de la url
-const id = searchParams.get("id");
+    const {
+        registrarClienteContext,
+        actualizarClienteContext
+    } = useClientes();
 
-//consulta de datos cuando se este editando
-useEffect(() =>{//consulta el cliente por medio de obtener cliente por id y coloca sus datos con el set formulario(datos)
-    const cargarCliente = async () =>{
-        if(!id) return;
+    // Cargar datos cuando se edita un cliente
+    useEffect(() => {
+        const cargarCliente = async () => {
+            if (!id) return;
 
-        try{
-            const datos = await obtenerClientePorId(id);
-            setFormulario(datos);
-        }catch (error){
-            console.error("Error al consultar cliente", error);
-            setError("No se pudieron cargar los datos del cliente");
+            try {
+                const datos = await obtenerClientePorId(id);
+                setFormulario(datos);
+            } catch (error) {
+                console.error("Error al consultar cliente:", error);
+                setError("No se pudieron cargar los datos del cliente");
+            }
+        };
 
-        }
+        cargarCliente();
+    }, [id]);
+
+    // Actualizar estados cuando escribimos
+    const handleChange = (evento) => {
+        const { name, value } = evento.target;
+
+        setFormulario((actual) => ({
+            ...actual,
+            [name]: value
+        }));
     };
 
-cargarCliente();
-}, [id]);
+    // Validar formulario
+    const validarFormulario = () => {
+        const { nombre, telefono, direccion } = formulario;
 
-
-
-//actualiza los estado cuando escribimos
-const handleChange = (evento)=>{//se actualiza el estado al escribir en los campos
-    const {name,value} = evento.target;
-    setFormulario((actual)=>({//representa datos actuales
-        ...actual,//conserva los demas campos
-        [name]: value//actualiza el campo q se modifico
-    }));
-};
-
-
-//registrar o actualizar
-const handleSubmit = async (evento) =>{
-    evento.preventDefault();
-    setError("");
-    setCargando(true)
-
-    try{
-        if(id){
-            await actualizarCliente(id,formulario);
-        }else{
-            await crearCliente(formulario);
+        if (!nombre.trim()) {
+            return "El nombre es obligatorio";
         }
-        navigate ("/clientes");
-    
-}
 
-catch (error) {
+        if (!/^[\p{L}\p{M}\s'-]+$/u.test(nombre)) {
+            return "El nombre solo debe contener letras y espacios";
+        }
+
+        if (!telefono.trim()) {
+            return "El teléfono es obligatorio";
+        }
+
+        if (!/^\d{10}$/.test(telefono.trim())) {
+            return "El teléfono debe contener exactamente 10 números";
+        }
+
+        if (!direccion.trim()) {
+            return "La dirección es obligatoria";
+        }
+
+        if (direccion.length > 100) {
+            return "La dirección no puede superar los 100 caracteres";
+        }
+
+        return "";
+    };
+
+    // Registrar o actualizar cliente
+    const handleSubmit = async (evento) => {
+        evento.preventDefault();
+        setError("");
+
+        const mensajeValidacion = validarFormulario();
+
+        if (mensajeValidacion) {
+            setError(mensajeValidacion);
+            return;
+        }
+
+        setCargando(true);
+
+        const datosCliente = {
+            nombre: formulario.nombre.trim(),
+            telefono: formulario.telefono.trim(),
+            direccion: formulario.direccion.trim()
+        };
+
+        try {
+            let resultado;
+
+            if (id) {
+                resultado = await actualizarClienteContext(id, datosCliente);
+            } else {
+                resultado = await registrarClienteContext(datosCliente);
+            }
+
+            if (resultado !== false) {
+                navigate("/clientes");
+            }
+
+        } catch (error) {
             console.error("Error al guardar cliente:", error);
             setError("No se pudo guardar la información del cliente");
-
         } finally {
             setCargando(false);
         }
@@ -147,7 +190,6 @@ catch (error) {
                 </div>
 
             </form>
-
         </div>
     );
 }
